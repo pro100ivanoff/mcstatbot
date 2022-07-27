@@ -3,18 +3,16 @@ from aiogram.dispatcher.filters.builtin import Command
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ContentType
 from asyncio import sleep
-from datetime import datetime as dt
 from random import choice
 
-host = "mint.mcpehost.ru"
+#ip и port сервера
+host = "host"
 port = 19999
 
-bot = Bot(token="5208615210:AAFRLT865o9oMPnkbL0pgou9xPTsjvi1UEs")
+bot = Bot(token="your bot token")
 dp = Dispatcher(bot)
 
-first_time = dt.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
-
-
+#узнаем кол-во играков на сервере
 def stat():
     try:
         with mcstats(host, port=port, timeout=5) as data:
@@ -22,11 +20,11 @@ def stat():
             stat = str(f"*Mark0bka Server\n     Players:* {num}/10")
             return stat
     except:
-        stat = "[Змей](tg://user?id=809901505), [Антон](tg://user?id=1123543137) сервер упал и не встает🌚"
+        stat = "[Змей](tg://user?id=), [Антон](tg://user?id=) сервер упал и не встает🌚"
         return stat
 
+#сообщение - приветствие
 def hello():
-    
     message = ""
     
     hello_message = [
@@ -44,81 +42,97 @@ def hello():
         "\n\nЕсли надо что - спроси в чатике. Всегда поделимся ресами или подскажем куда идти за ними."
     ]
     
+    #собираем сообщение из списка
     for i in hello_message:
         message += i
-    
     return message
 
+#приветсвуем нового участника
 @dp.message_handler(content_types = ["new_chat_members"])
 async def new_chat_member(message: types.Message):
     
+    #отправляем стикер с Якубовичем
     await message.answer_sticker("CAACAgIAAxkBAAESNJRiPEWNy9Ql-yFsgqeW9lK1wbghaQACdgIAAgk7OxORLH4aUgNjViME")
     sleep(1)
+    
+    #отправляем сообщение - приветствие
     await message.answer(hello())
 
+#проверяем кол-во играков на сервере
 @dp.message_handler(commands='status')
 async def main(message: types.Message):
+    
+    #создаем инлайн-клавиатуру и добавляем кнопку
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Update🔁", callback_data="update"))
+    
+    #отправляем сообщение с инлайн-клавиатурой
     await message.reply(stat(), parse_mode="Markdown", reply_markup=keyboard)
 
+#обработчик колбеков
 @dp.callback_query_handler(text="update")
 async def send_random_value(call: types.CallbackQuery):
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Update🔁", callback_data="apdate"))
+    
+    #обновляем информацию при помощи редактирования сообщения
     await call.message.edit_text(stat(), parse_mode="Markdown", reply_markup=keyboard)
+    
     await call.answer("Обнoвлено!")
 
+#тоже такая же функция, но только тригерится на другой колбек
+#ничего лучше не придумал, для неограниченного кол-во нажатий
+#извиняюсь за колхоз
 @dp.callback_query_handler(text="apdate")
 async def send_random_value1(call: types.CallbackQuery):
+    
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton(text="Update🔁", callback_data="update"))
+    
     await call.message.edit_text(stat(), parse_mode="Markdown", reply_markup=keyboard)
     await call.answer("Обнoвлено!")
 
+#тегаем админов сервера
 @dp.message_handler(Command(commands=["admins"]))
 async def send_welcome(message: types.Message, command: Command.CommandObj):
     args = command.args
-    if args == None:
-        await message.answer("Введи сообщение для админов, как показано в образце:\n/admins включите выживание, пожалуйста🥺")
-    else:
-        await message.answer(f"[Змей](tg://user?id=809901505), [Антон](tg://user?id=1123543137) *{args}*", parse_mode="Markdown")
     
-@dp.callback_query_handler(text="yes")
-async def yes(call: types.CallbackQuery):
-    global first_time
-    result = dt.now() - first_time
-    if result.seconds > 180:
-        first_time = dt.now()
-        await call.message.edit_text('[Змей](tg://user?id=809901505), [Антон](tg://user?id=1123543137) вы нам нужны👀', parse_mode="Markdown")
+    if args == None:
+        #говорим юзеру, что нужны аргументы
+        await message.answer("Введи сообщение для админов, как показано в образце:\n/admins включите выживание, пожалуйста🥺")
+    
     else:
-        ostatok = 180 - result.seconds #я просто не знал, как будет на английском "остаток")))
-        await call.answer(f'Попробуй снова через {ostatok // 60}m {ostatok % 60}s')
+        #тегаем админом и выводим сообщение юзера
+        await message.answer(f"[Змей](tg://user?id=), [Антон](tg://user?id=) *{args}*", parse_mode="Markdown")
 
-@dp.callback_query_handler(text="no")
-async def no(call: types.CallbackQuery):
-    await call.answer("ok")
-    await call.message.delete()
-
+#файл майнкрафт
 @dp.message_handler(commands="minecraft")
 async def minecraft(message: types.Message):
-    await bot.copy_message(message.chat.id, -1001528440871, 179)
+    #отправляем скопированное сообщения из чата
+    await bot.copy_message(message.chat.id, -10015******71, 179)
 
+#пикча с инфой о спавне руд в 1.18
 @dp.message_handler(commands="ores")
 async def ores(message: types.Message):
-    await bot.copy_message(message.chat.id, -1001528440871, 136)
+    await bot.copy_message(message.chat.id, -10015******71, 136)
 
+#таблица зельеварения
 @dp.message_handler(commands="potions")
 async def potions(message: types.Message):
-    await bot.copy_message(message.chat.id, -1001528440871, 180)
+    await bot.copy_message(message.chat.id, -10015******71, 180)
 
+#правила
 @dp.message_handler(commands="rules")
 async def rules(message: types.Message):
     await message.answer(hello())
 
+#прощаемся с вышедшим юзером
 @dp.message_handler(content_types = types.ContentTypes.LEFT_CHAT_MEMBER)
 async def left_chat_members(message: types.Message):
-    await bot.copy_message(message.chat.id, -1001528440871, 343)
+    
+    #грустный стикер с Якубовичем
+    await bot.copy_message(message.chat.id, -10015******71, 343)
 
+#запускаем бота
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

@@ -6,7 +6,7 @@
 2. Приветствовать нового участника чата и грустить, если он выйдет из него
 <img src="screenshots/2.jpg" alt="">
 <img src="screenshots/5.jpg" alt="">
-3. Отправлять файлы с полезной инфой
+3. Отправлять файлы с полезной информацией
 <img src="screenshots/3.jpg" alt="">
 <img src="screenshots/4.jpg" alt="">
 4. Тегать админов 
